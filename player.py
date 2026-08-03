@@ -1,11 +1,12 @@
 import circleshape, pygame
-from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOT_VELOCITY, SHOT_RADIUS
+from constants import *
 from shot import Shot
 
 class Player(circleshape.CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0.0  # Rotation angle in degrees
+        self.cooldown_time = PLAYER_SHOOT_COOLDOWN_SECONDS  # Cooldown time for shooting
 
     # in the Player class
     def triangle(self) -> list[pygame.Vector2]:
@@ -37,6 +38,9 @@ class Player(circleshape.CircleShape):
             self.move(-dt)  # Move backward
         if keys[pygame.K_SPACE]:
             self.shoot()
+
+        self.cooldown_time -= dt
+
     
     def move(self, dt: float) -> None:
         # Move the player in the direction it's facing
@@ -47,7 +51,12 @@ class Player(circleshape.CircleShape):
 
     def shoot(self) -> None:
         # Create a new shot in the direction the player is facing
+        if self.cooldown_time > 0:
+            return  # Still in cooldown, cannot shoot yet
+        else:
+            self.cooldown_time = PLAYER_SHOOT_COOLDOWN_SECONDS  # Reset cooldown
+
         shot = Shot(self.position.x, self.position.y)
-        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOT_VELOCITY
+        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_VELOCITY
         
     
