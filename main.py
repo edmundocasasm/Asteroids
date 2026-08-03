@@ -1,6 +1,6 @@
-import pygame
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, ASTEROID_MIN_RADIUS, ASTEROID_KINDS, ASTEROID_SPAWN_RATE_SECONDS, ASTEROID_MAX_RADIUS
-from logger import log_state
+import pygame, sys
+from constants import *
+from logger import log_state, log_event
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
@@ -39,6 +39,13 @@ def main():
         #print(f"Delta time: {dt:.4f} seconds")
         screen.fill("black")
         updatable.update(dt)
+
+        for asteroid in asteroids:
+            if player.collides_with(asteroid):
+                log_event("player_hit")
+                print("Game Over!")
+                sys.exit()
+
         for draw_object in drawable:
             draw_object.draw(screen)
         pygame.display.flip()
